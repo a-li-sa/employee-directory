@@ -1,57 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { DataGrid } from '@material-ui/data-grid';
-import randomuser from '../api/randomuser';
-
-const sortModel = [
-  {
-    field: 'id',
-    sort: 'asc',
-  },
-];
-
-const columns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "avatar", headerName: "Avatar", width: 100,
-    renderCell: (params) => (
-      <img src={params.value} alt="avatar" />
-    )
-  },
-  { field: "name", headerName: "Name", width: 170 },
-  { field: "gender", headerName: "Gender", width: 110 },
-  { field: "phone", headerName: "Phone", width: 140 },
-  { field: "email", headerName: "Email", width: 250 },
-  { field: "dob", headerName: "Date of Birth", width: 180 },
-  { field: "address", headerName: "Address", width: 370 },
-];
+import React, {useState, useEffect} from 'react';
+import { MDBDataTableV5 } from 'mdbreact';
+import randomuser from "../api/randomuser";
 
 export const EmployeeGrid = () => {
-  const [employees, setEmployees] = useState([])
+  const [rows, setRows] = useState([]);
   const getEmployees = async () => {
-    const response = await randomuser.get("/?results=100&seed=employee&nat=us");
-    const newArr = []
-    let employeeId = response.data.results.length
-    response.data.results.forEach(({name, picture, gender, phone, email, dob, location}) => {
+    const response = await randomuser.get("/?results=100&seed=employee&nat=us&inc=name,picture,gender,phone,email,dob,location");
+    const newArr = [];
+    response.data.results.forEach(({name, picture, gender, phone, email, dob, location}, index) => {
       newArr.push({
-        id: employeeId--,
-        avatar: picture.thumbnail,
-        name: `${name.first} ${name.last}`,
+        id: index + 1,
+        avatar:  <img src={picture.thumbnail} alt="avatar" />,
+        first: name.first,
+        last: name.last,
         gender,
         phone,
         email,
-        dob: dob.date.replace(/T.*/,''),
-        address: `${location.street.number} ${location.street.name}, ${location.city}, ${location.state} ${location.postcode}`
+        dob: dob.date.replace(/T.*/, ''),
+        street: `${location.street.number} ${location.street.name}`,
+        city: location.city,
+        state: location.state,
+        postcode: location.postcode
       })
     });
-    setEmployees(newArr)
+    setRows(newArr)
   }
 
   useEffect(() => {
-    getEmployees();
+    getEmployees()
   }, [])
 
-  return (
-    <div style={{ height: "100vh", width: '100%' }}>
-      <DataGrid sortModel={sortModel} rows={employees} columns={columns}/>
-    </div>
-  );
+  const datatable = {
+    columns: [
+      { field: "id", label: "ID", width: 70 },
+      { field: "avatar", label: "Avatar", width: 100 },
+      { field: "first", label: "First Name", width: 130 },
+      { field: "last", label: "Last Name", width: 130 },
+      { field: "gender", label: "Gender", width: 110 },
+      { field: "phone", label: "Phone", width: 140 },
+      { field: "email", label: "Email", width: 250 },
+      { field: "dob", label: "Date of Birth", width: 140 },
+      { field: "street", label: "Street", width: 190 },
+      { field: "city", label: "City", width: 130 },
+      { field: "state", label: "State", width: 140 },
+      { field: "postcode", label: "Postal Code", width: 140 },
+    ],
+    rows: rows,
+  };
+
+  return <MDBDataTableV5
+    hover
+    entriesOptions={[10, 20, 50, 100]}
+    entries={10}
+    pagesAmount={4}
+    data={datatable}
+    searchTop
+    searchBottom={false}
+  />
 }
