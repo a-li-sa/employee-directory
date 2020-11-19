@@ -50,8 +50,8 @@ export const EmployeeGrid = () => {
 
   return <MDBDataTableV5
     hover
-    entriesOptions={[10, 20, 50, 100]}
-    entries={10}
+    entriesOptions={[5, 10, 50, 100]}
+    entries={5}
     pagesAmount={4}
     data={datatable}
     searchTop
