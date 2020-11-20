@@ -10,7 +10,7 @@ export const EmployeeGrid = () => {
     response.data.results.forEach(({name, picture, gender, phone, email, dob, location}, index) => {
       newArr.push({
         id: index + 1,
-        avatar:  <img src={picture.thumbnail} alt="avatar" />,
+        avatar:  <img src={picture.thumbnail} alt="avatar" style={{borderRadius: "50%"}}/>,
         first: name.first,
         last: name.last,
         gender,
@@ -50,11 +50,13 @@ export const EmployeeGrid = () => {
 
   return <MDBDataTableV5
     hover
+    responsive
     entriesOptions={[5, 10, 50, 100]}
     entries={5}
     pagesAmount={4}
     data={datatable}
     searchTop
     searchBottom={false}
+    style={{color: "#2d2d2d"}}
   />
 }
